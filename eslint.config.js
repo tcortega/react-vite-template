@@ -10,6 +10,7 @@ export default tseslint.config([
   globalIgnores(["dist"]),
   {
     files: ["**/*.{ts,tsx}"],
+    plugins: ["@tanstack/query"],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
