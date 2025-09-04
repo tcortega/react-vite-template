@@ -1,4 +1,5 @@
 import { routeTree } from "@/routeTree.gen";
+import { env } from "@/shared/env";
 import { ErrorBoundary } from "@highlight-run/react";
 import {
   QueryCache,
@@ -7,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { H } from "highlight.run";
+import { HelmetProvider } from "react-helmet-async";
 
 const router = createRouter({
   routeTree,
@@ -14,28 +16,45 @@ const router = createRouter({
 
 const MINUTE = 1000 * 60;
 const queryClient = new QueryClient({
-  queryCache: new QueryCache(),
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (env.VITE_HIGHLIGHT_PROJECT_ID) {
+        H.consumeError(error as Error);
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
       gcTime: 5 * MINUTE,
     },
+    mutations: {
+      onError: (error) => {
+        if (env.VITE_HIGHLIGHT_PROJECT_ID) {
+          H.consumeError(error as Error);
+        }
+      },
+    },
   },
 });
 
-H.init(import.meta.env.VITE_HIGHLIGHT_PROJECT_ID, {
-  environment: import.meta.env.MODE,
-  networkRecording: {
-    enabled: true,
-    recordHeadersAndBody: true,
-  },
-});
+if (env.VITE_HIGHLIGHT_PROJECT_ID) {
+  H.init(env.VITE_HIGHLIGHT_PROJECT_ID, {
+    environment: env.MODE,
+    networkRecording: {
+      enabled: true,
+      recordHeadersAndBody: true,
+    },
+  });
+}
 
 export function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 }

@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* Accessibility: Visible focus styles */
+@layer base {
+  *:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-blue-600;
+  }
+}

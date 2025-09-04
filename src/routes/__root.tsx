@@ -1,4 +1,8 @@
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { DefaultErrorComponent } from "@/shared/ui/error-boundary";
+import { NotFoundComponent } from "@/shared/ui/not-found";
+import { PendingComponent } from "@/shared/ui/pending";
+import { RootLayout } from "@/shared/ui/root-layout";
+import { createRootRouteWithContext } from "@tanstack/react-router";
 
 export interface RouterContext {
   breadcrumb?: {
@@ -7,5 +11,8 @@ export interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => <Outlet />,
+  component: RootLayout,
+  errorComponent: DefaultErrorComponent,
+  notFoundComponent: NotFoundComponent,
+  pendingComponent: PendingComponent,
 });
